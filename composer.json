@@ -1,0 +1,21 @@
+{
+  "name": "ikarus/sps-server",
+  "license": "BSD-3-Clause",
+  "minimum-stability": "dev",
+  "authors": [
+    {
+      "name": "Thomas Abplanalp",
+      "email": "info@tasoft.ch"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Ikarus\\SPS\\Server\\" : "src"
+    }
+  },
+  "require" : {
+    "php": "^7.2",
+    "ikarus/sps": "dev-master",
+    "ext-sockets": "*"
+  }
+}
