@@ -49,6 +49,7 @@ abstract class AbstractServerPlugin implements ServerPluginInterface, TearDownPl
     /** @var resource */
     protected $socket;
     private $_type;
+    private $_backlog = self::SOCK_BACKLOG;
 
     const SOCK_BACKLOG = 1;
     const SOCK_BUFFER_SIZE = 2048;
@@ -85,12 +86,28 @@ abstract class AbstractServerPlugin implements ServerPluginInterface, TearDownPl
     }
 
     /**
+     * @return int
+     */
+    public function getBacklog(): int {
+        return $this->_backlog;
+    }
+
+    /**
      * @param bool $reuseAddress
      * @return static
      */
     public function setReuseAddress(bool $reuseAddress)
     {
         $this->reuseAddress = $reuseAddress;
+        return $this;
+    }
+
+    /**
+     * @param int $backlog
+     * @return static
+     */
+    public function setBacklog(int $backlog) {
+        $this->_backlog = $backlog;
         return $this;
     }
 
@@ -112,8 +129,7 @@ abstract class AbstractServerPlugin implements ServerPluginInterface, TearDownPl
      */
     protected function trapNextCommand(PluginManagementInterface $management) {
         if(is_resource($this->socket)) {
-            $msgsock = socket_accept($this->socket);
-            if($msgsock) {
+            while($msgsock = socket_accept($this->socket)) {
                 $buffer = "";
 
                 while ($out = socket_read($msgsock, static::SOCK_BUFFER_SIZE)) {
@@ -194,7 +210,7 @@ abstract class AbstractServerPlugin implements ServerPluginInterface, TearDownPl
                 throw new SPSException( "socket_create() failed: " . socket_strerror($c) . " ($this->address)", $c);
             }
 
-            if (!@socket_listen($sock, static::SOCK_BACKLOG)) {
+            if (!@socket_listen($sock, $this->getBacklog())) {
                 $c = socket_last_error($sock);
                 @$this->closeConnection();
                 $this->socket = false;
