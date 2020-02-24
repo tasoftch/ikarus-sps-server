@@ -55,26 +55,29 @@ abstract class AbstractServerPlugin implements ServerPluginInterface, TearDownPl
     const SOCK_BUFFER_SIZE = 2048;
 
     private $reuseAddress = false;
+    private $identifier;
 
     /**
      * @inheritDoc
      */
     public function getIdentifier(): string
     {
-        return $this->getAddress();
+        return $this->identifier ?: $this->getAddress();
     }
 
     /**
      * AbstractIntermediatePlugin constructor.
      * @param string $address
      * @param int|null $port
+     * @param string|null $identifier
      * @param string $startMessage
      */
-    public function __construct(string $address, int $port = NULL, string $startMessage = 'Welcome to Remote Event Server of Ikarus SPS!')
+    public function __construct(string $address, int $port = NULL, string $identifier = NULL, string $startMessage = 'Welcome to Remote Event Server of Ikarus SPS!')
     {
         $this->address = $address;
         $this->port = $port;
         $this->startMessage = $startMessage;
+        $this->identifier = $identifier;
     }
 
     /**
